@@ -1,0 +1,619 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Star Burger — Jizzakh</title>
+  <meta name="description" content="Star Burger — 24/7 cafe in Jizzakh since 2018. Burgers, pizza, Turkish and European dishes, dine-in, takeaway and delivery.">
+  <style>
+    :root{
+      --bg:#0c0f10;
+      --panel:#121719;
+      --panel2:#171d20;
+      --text:#f4f6f5;
+      --muted:#aab3af;
+      --line:#273033;
+      --green:#42e53b;
+      --green-soft:rgba(66,229,59,.15);
+      --card:#111517;
+      --shadow:0 18px 45px rgba(0,0,0,.35);
+      --radius:24px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(66,229,59,.08), transparent 28%),
+        radial-gradient(circle at top left, rgba(66,229,59,.06), transparent 24%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.5;
+    }
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    .wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+    header{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter: blur(12px);
+      background:rgba(12,15,16,.72);
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .nav{
+      height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+    }
+    .brand{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.02em}
+    .brand img{width:46px;height:auto;filter:drop-shadow(0 0 18px rgba(66,229,59,.18))}
+    .brand small{display:block;color:var(--muted);font-size:12px;font-weight:600;margin-top:2px}
+    .navlinks{display:flex;gap:18px;align-items:center;color:var(--muted);font-size:14px}
+    .navlinks a:hover{color:var(--text)}
+    .lang{
+      display:flex;gap:8px;align-items:center;
+      background:var(--panel);border:1px solid rgba(255,255,255,.06);
+      border-radius:999px;padding:6px;
+    }
+    .lang button{
+      border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer;
+      font-weight:700
+    }
+    .lang button.active{background:var(--green);color:#091108}
+    .hero{
+      padding:34px 0 28px;
+    }
+    .hero-grid{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:stretch
+    }
+    .hero-copy{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.05);
+      box-shadow:var(--shadow);
+      border-radius:32px;
+      padding:34px;
+      position:relative;overflow:hidden;
+    }
+    .hero-copy:before{
+      content:"";position:absolute;inset:auto -80px -80px auto;width:220px;height:220px;
+      background:radial-gradient(circle, rgba(66,229,59,.22), transparent 70%);
+      pointer-events:none;
+    }
+    .eyebrow{
+      display:inline-flex;gap:10px;align-items:center;
+      padding:9px 14px;border-radius:999px;background:var(--green-soft);
+      color:#c9ffca;border:1px solid rgba(66,229,59,.18);font-weight:700;font-size:13px
+    }
+    h1{font-size: clamp(34px, 6vw, 64px);line-height:1.02;margin:18px 0 14px}
+    .lead{font-size:18px;color:#d1d8d4;max-width:58ch}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 28px}
+    .badge{
+      padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);
+      color:#dde4df;font-size:14px
+    }
+    .cta{display:flex;flex-wrap:wrap;gap:12px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:10px;
+      min-height:48px;padding:0 18px;border-radius:14px;font-weight:800;
+      border:1px solid transparent;transition:.18s ease;
+    }
+    .btn.primary{background:var(--green);color:#081008}
+    .btn.primary:hover{transform:translateY(-1px)}
+    .btn.secondary{background:transparent;border-color:rgba(255,255,255,.12);color:var(--text)}
+    .hero-card{
+      position:relative;min-height:520px;border-radius:32px;overflow:hidden;box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.05);
+      background:#111;
+    }
+    .hero-card img{width:100%;height:100%;object-fit:cover}
+    .hero-card .overlay{
+      position:absolute;inset:0;background:
+      linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.52));
+    }
+    .hero-pills{
+      position:absolute;left:18px;right:18px;bottom:18px;
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+    }
+    .pill{
+      background:rgba(12,15,16,.75);border:1px solid rgba(255,255,255,.08);backdrop-filter: blur(8px);
+      padding:12px 14px;border-radius:18px
+    }
+    .pill strong{display:block;font-size:17px}
+    .pill span{color:var(--muted);font-size:13px}
+    section{padding:22px 0 42px}
+    .section-head{
+      display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:18px
+    }
+    .section-head h2{font-size: clamp(26px, 3.8vw, 40px);margin:0}
+    .section-head p{margin:0;color:var(--muted);max-width:58ch}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .dish{
+      background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:22px;overflow:hidden;
+      box-shadow:var(--shadow)
+    }
+    .dish img{width:100%;aspect-ratio:4/5;object-fit:cover}
+    .dish .body{padding:14px 15px 16px}
+    .dish h3{margin:0 0 6px;font-size:18px}
+    .dish p{margin:0;color:var(--muted);font-size:14px}
+    .gallery{display:grid;grid-template-columns:1.2fr .8fr .8fr;grid-auto-rows:230px;gap:16px}
+    .gallery .item{
+      position:relative;overflow:hidden;border-radius:24px;border:1px solid rgba(255,255,255,.06);
+      box-shadow:var(--shadow);background:#111
+    }
+    .gallery img{width:100%;height:100%;object-fit:cover}
+    .gallery .item.large{grid-row:span 2}
+    .gallery .caption{
+      position:absolute;left:14px;right:14px;bottom:14px;background:rgba(12,15,16,.72);
+      border:1px solid rgba(255,255,255,.08);backdrop-filter: blur(8px);padding:10px 12px;border-radius:16px;
+      font-size:14px
+    }
+    .gallery .caption span{display:block;color:var(--muted);font-size:12px}
+    .services{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .service{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border-radius:22px;border:1px solid rgba(255,255,255,.06);padding:18px
+    }
+    .service strong{display:block;font-size:18px;margin-bottom:6px}
+    .service p{margin:0;color:var(--muted)}
+    .contact-box{
+      display:grid;grid-template-columns:1fr .9fr;gap:18px
+    }
+    .panel{
+      background:var(--panel);border:1px solid rgba(255,255,255,.06);border-radius:28px;padding:24px;box-shadow:var(--shadow)
+    }
+    .contact-list{display:grid;gap:12px}
+    .contact-item{
+      display:flex;justify-content:space-between;gap:20px;align-items:center;
+      padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)
+    }
+    .contact-item span{color:var(--muted);font-size:14px}
+    .contact-item strong{font-size:16px}
+    .footer{
+      color:var(--muted);padding:28px 0 48px;font-size:14px
+    }
+    @media (max-width: 980px){
+      .hero-grid,.contact-box,.cards,.services,.gallery{grid-template-columns:1fr 1fr}
+      .gallery .item.large{grid-row:span 1}
+    }
+    @media (max-width: 720px){
+      .navlinks{display:none}
+      .hero-grid,.contact-box,.cards,.services,.gallery{grid-template-columns:1fr}
+      .hero-card{min-height:400px}
+      .hero-copy{padding:24px}
+      .section-head{display:block}
+      .section-head p{margin-top:8px}
+      .hero-pills{grid-template-columns:1fr}
+      .contact-item{display:block}
+      .contact-item strong{display:block;margin-top:6px}
+      h1{letter-spacing:-0.04em}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <img src="logo.png" alt="Star Burger logo">
+      <div>
+        <div>Star Burger</div>
+        <small data-i18n="since">Jizzakh • since 2018</small>
+      </div>
+    </a>
+    <nav class="navlinks">
+      <a href="#menu" data-i18n="navMenu">Menu</a>
+      <a href="#atmosphere" data-i18n="navAtmosphere">Atmosphere</a>
+      <a href="#services" data-i18n="navServices">Services</a>
+      <a href="#contact" data-i18n="navContact">Contact</a>
+    </nav>
+    <div class="lang">
+      <button class="active" data-lang="uz">UZ</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow" data-i18n="eyebrow">24/7 cafe in Jizzakh</div>
+        <h1 data-i18n="heroTitle">Burgers, pizza and a strong atmosphere — all day, all night.</h1>
+        <p class="lead" data-i18n="heroLead">
+          Star Burger has been serving guests since 2018. Core menu: burgers and pizza. Updated menu: Turkish and European dishes. Dine-in, takeaway and delivery.
+        </p>
+        <div class="badges">
+          <div class="badge" data-i18n="badge1">Since 2018</div>
+          <div class="badge" data-i18n="badge2">Open 24/7</div>
+          <div class="badge" data-i18n="badge3">Delivery</div>
+          <div class="badge" data-i18n="badge4">Takeaway</div>
+          <div class="badge" data-i18n="badge5">Football & projector hall</div>
+        </div>
+        <div class="cta">
+          <a class="btn primary" href="https://starburger.qrcha.uz" target="_blank" rel="noopener" data-i18n="ctaMenu">Open menu</a>
+          <a class="btn secondary" href="https://t.me/starburger_uz" target="_blank" rel="noopener">Telegram</a>
+          <a class="btn secondary" href="tel:+998955033333" data-i18n="ctaCall">Call</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <img src="atm2.jpg" alt="Star Burger facade">
+        <div class="overlay"></div>
+        <div class="hero-pills">
+          <div class="pill">
+            <strong data-i18n="pill1Title">Qodirjon Imomov ko‘chasi</strong>
+            <span data-i18n="pill1Text">Jizzakh, Uzbekistan</span>
+          </div>
+          <div class="pill">
+            <strong data-i18n="pill2Title">Comfort for groups</strong>
+            <span data-i18n="pill2Text">Main hall, projector hall, private room</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="menu">
+    <div class="section-head">
+      <div>
+        <h2 data-i18n="menuTitle">Selected dishes</h2>
+      </div>
+      <p data-i18n="menuText">Not the full menu. This is a short showcase based on the photos you sent.</p>
+    </div>
+    <div class="cards">
+      <article class="dish">
+        <img src="food3.jpg" alt="Star Burger">
+        <div class="body">
+          <h3>Star Burger</h3>
+          <p data-i18n="dish1">Signature burger from the updated menu.</p>
+        </div>
+      </article>
+      <article class="dish">
+        <img src="food8.jpg" alt="Cheese Burger and Steak Burger">
+        <div class="body">
+          <h3>Cheese / Steak Burger</h3>
+          <p data-i18n="dish2">Classic burger line with bold meat focus.</p>
+        </div>
+      </article>
+      <article class="dish">
+        <img src="food1.jpg" alt="Pide">
+        <div class="body">
+          <h3>Pide</h3>
+          <p data-i18n="dish3">Turkish-style baked flatbread options.</p>
+        </div>
+      </article>
+      <article class="dish">
+        <img src="food4.jpg" alt="Iskandar Kebab">
+        <div class="body">
+          <h3>Iskandar Kebab</h3>
+          <p data-i18n="dish4">One of the stronger Turkish additions.</p>
+        </div>
+      </article>
+      <article class="dish">
+        <img src="food5.jpg" alt="Tombik Doner">
+        <div class="body">
+          <h3>Tombik Doner</h3>
+          <p data-i18n="dish5">Fast, filling option for takeaway or dine-in.</p>
+        </div>
+      </article>
+      <article class="dish">
+        <img src="food7.jpg" alt="Bruschetta">
+        <div class="body">
+          <h3>Bruschetta</h3>
+          <p data-i18n="dish6">European-style starter options.</p>
+        </div>
+      </article>
+      <article class="dish">
+        <img src="food6.jpg" alt="Breakfast set">
+        <div class="body">
+          <h3>Breakfast Set</h3>
+          <p data-i18n="dish7">Large table-style breakfast for sharing.</p>
+        </div>
+      </article>
+      <article class="dish">
+        <img src="atm10.jpg" alt="Pizza at Star Burger">
+        <div class="body">
+          <h3>Pizza</h3>
+          <p data-i18n="dish8">Pizza remains one of the core categories.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="atmosphere">
+    <div class="section-head">
+      <div>
+        <h2 data-i18n="atmTitle">Atmosphere and space</h2>
+      </div>
+      <p data-i18n="atmText">The strongest visual angle is not only food. You also have a recognizable interior, a facade, projector hall, gaming room and branded details.</p>
+    </div>
+    <div class="gallery">
+      <div class="item large">
+        <img src="atm3.jpg" alt="Main hall">
+        <div class="caption">
+          <strong data-i18n="g1t">Main hall</strong>
+          <span data-i18n="g1d">Recognizable branding wall and casual seating</span>
+        </div>
+      </div>
+      <div class="item">
+        <img src="atm6.jpg" alt="Projector hall">
+        <div class="caption"><strong data-i18n="g2t">Projector hall</strong><span data-i18n="g2d">For football and group visits</span></div>
+      </div>
+      <div class="item">
+        <img src="atm8.jpg" alt="Private room">
+        <div class="caption"><strong data-i18n="g3t">Private room</strong><span data-i18n="g3d">Separate room for small groups</span></div>
+      </div>
+      <div class="item">
+        <img src="atm9.jpg" alt="Interior mural">
+        <div class="caption"><strong data-i18n="g4t">Interior details</strong><span data-i18n="g4d">Memorable visual accents</span></div>
+      </div>
+      <div class="item">
+        <img src="atm2.jpg" alt="Facade">
+        <div class="caption"><strong data-i18n="g5t">Facade</strong><span data-i18n="g5d">Strong night view for maps and social media</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="section-head">
+      <div>
+        <h2 data-i18n="srvTitle">What works well in the positioning</h2>
+      </div>
+      <p data-i18n="srvText">Your place should not be presented only as a burger spot. The stronger angle is: food + recognizable interior + late-night comfort + group-friendly space.</p>
+    </div>
+    <div class="services">
+      <div class="service">
+        <strong data-i18n="s1t">24/7 format</strong>
+        <p data-i18n="s1d">A real differentiator if the service quality stays consistent.</p>
+      </div>
+      <div class="service">
+        <strong data-i18n="s2t">Burgers + pizza core</strong>
+        <p data-i18n="s2d">Clear main categories with updated menu expansion.</p>
+      </div>
+      <div class="service">
+        <strong data-i18n="s3t">Turkish & European dishes</strong>
+        <p data-i18n="s3d">Broadens the audience without hiding the core menu.</p>
+      </div>
+      <div class="service">
+        <strong data-i18n="s4t">Group atmosphere</strong>
+        <p data-i18n="s4d">Projector hall, private room and main hall support this well.</p>
+      </div>
+      <div class="service">
+        <strong data-i18n="s5t">Delivery</strong>
+        <p data-i18n="s5d">Important for repeat customers and late orders.</p>
+      </div>
+      <div class="service">
+        <strong data-i18n="s6t">Takeaway</strong>
+        <p data-i18n="s6d">Works well with burgers, doner, pizza and quick items.</p>
+      </div>
+      <div class="service">
+        <strong data-i18n="s7t">Football angle</strong>
+        <p data-i18n="s7d">Use match nights as a recurring marketing hook.</p>
+      </div>
+      <div class="service">
+        <strong data-i18n="s8t">Recognizable branding</strong>
+        <p data-i18n="s8d">Logo wall and facade are strong visual assets.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="section-head">
+      <div>
+        <h2 data-i18n="contactTitle">Contact</h2>
+      </div>
+      <p data-i18n="contactText">This version already uses the links and details you provided. Domain can be connected later.</p>
+    </div>
+    <div class="contact-box">
+      <div class="panel">
+        <div class="contact-list">
+          <a class="contact-item" href="tel:+998955033333">
+            <div><span data-i18n="c1">Phone</span><strong>+998 95 503 33 33</strong></div>
+            <div>↗</div>
+          </a>
+          <a class="contact-item" href="https://t.me/starburger_uz" target="_blank" rel="noopener">
+            <div><span>Telegram</span><strong>@starburger_uz</strong></div>
+            <div>↗</div>
+          </a>
+          <a class="contact-item" href="https://instagram.com/starburger_uz" target="_blank" rel="noopener">
+            <div><span>Instagram</span><strong>@starburger_uz</strong></div>
+            <div>↗</div>
+          </a>
+          <a class="contact-item" href="https://starburger.qrcha.uz" target="_blank" rel="noopener">
+            <div><span data-i18n="c4">Online menu</span><strong>starburger.qrcha.uz</strong></div>
+            <div>↗</div>
+          </a>
+          <a class="contact-item" href="https://www.google.com/maps/search/?api=1&query=Star+Burger+Jizzakh" target="_blank" rel="noopener">
+            <div><span data-i18n="c5">Address</span><strong>Qodirjon Imomov ko‘chasi, Jizzakh</strong></div>
+            <div>↗</div>
+          </a>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="margin-top:0" data-i18n="readyTitle">Current recommendation</h3>
+        <p style="color:var(--muted)" data-i18n="readyText">
+          For the next version, the best route is not to add more random photos. Use a smaller, cleaner set:
+          facade, main hall, projector hall, private room, 6–8 strong dish photos and direct order links.
+        </p>
+        <div class="badges" style="margin-top:18px">
+          <div class="badge" data-i18n="r1">Facade photo</div>
+          <div class="badge" data-i18n="r2">Hall photos</div>
+          <div class="badge" data-i18n="r3">Projector / football</div>
+          <div class="badge" data-i18n="r4">Best burgers</div>
+          <div class="badge" data-i18n="r5">Pide / Turkish dishes</div>
+          <div class="badge" data-i18n="r6">Telegram order link</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer wrap">
+    <div data-i18n="footer">Star Burger — Jizzakh • 24/7 • Since 2018</div>
+  </div>
+</main>
+
+<script>
+const translations = {
+  uz: {
+    since: "Jizzax • 2018-yildan beri",
+    navMenu: "Menyu",
+    navAtmosphere: "Atmosfera",
+    navServices: "Xizmatlar",
+    navContact: "Aloqa",
+    eyebrow: "Jizzaxdagi 24/7 kafe",
+    heroTitle: "Burger, pitsa va kuchli atmosfera — kunu tun.",
+    heroLead: "Star Burger 2018-yildan beri mehmonlarga xizmat ko‘rsatadi. Asosiy yo‘nalish: burger va pitsa. Yangilangan menyuda turk va yevropa taomlari ham bor. Zal, olib ketish va yetkazib berish mavjud.",
+    badge1: "2018-yildan beri",
+    badge2: "24/7 ishlaydi",
+    badge3: "Yetkazib berish",
+    badge4: "Olib ketish",
+    badge5: "Futbol va proyektor zal",
+    ctaMenu: "Menyuni ochish",
+    ctaCall: "Qo‘ng‘iroq qilish",
+    pill1Title: "Qodirjon Imomov ko‘chasi",
+    pill1Text: "Jizzax, O‘zbekiston",
+    pill2Title: "Kompaniyalar uchun qulay",
+    pill2Text: "Asosiy zal, proyektor zal, alohida xona",
+    menuTitle: "Tanlangan taomlar",
+    menuText: "Bu to‘liq menyu emas. Siz yuborgan rasmlar asosida qisqa ko‘rsatma blok.",
+    dish1: "Yangilangan menyudagi asosiy signature burger.",
+    dish2: "Go‘shtga urg‘u berilgan klassik burger liniyasi.",
+    dish3: "Turkcha pishiriq uslubidagi pide variantlari.",
+    dish4: "Turk menyusidagi kuchli pozitsiyalardan biri.",
+    dish5: "Tez, to‘yimli, zal yoki olib ketish uchun qulay.",
+    dish6: "Yevropa uslubidagi yengil starter variantlari.",
+    dish7: "Birga yeyish uchun katta nonushta seti.",
+    dish8: "Pitsa hanuz asosiy kategoriyalardan biri.",
+    atmTitle: "Atmosfera va joy",
+    atmText: "Sizning kuchli tomoningiz faqat ovqat emas. Interyer, fasad, proyektor zal, o‘yin xonasi va brend elementlari ham kuchli.",
+    g1t: "Asosiy zal",
+    g1d: "Taniqli branding devori va erkin o‘tirish zonasi",
+    g2t: "Proyektor zal",
+    g2d: "Futbol va guruh tashriflari uchun",
+    g3t: "Alohida xona",
+    g3d: "Kichik kompaniyalar uchun yopiq joy",
+    g4t: "Interyer detallari",
+    g4d: "Esda qoladigan vizual aksentlar",
+    g5t: "Fasad",
+    g5d: "Xarita va ijtimoiy tarmoqlar uchun kuchli kechki ko‘rinish",
+    srvTitle: "Pozitsiyada yaxshi ishlaydigan tomonlar",
+    srvText: "Joyni faqat burger maskani sifatida ko‘rsatish yetmaydi. Kuchliroq burchak: taom + taniqli interyer + kechki qulaylik + kompaniyalar uchun joy.",
+    s1t: "24/7 format",
+    s1d: "Agar xizmat sifati barqaror bo‘lsa, bu katta ustunlik.",
+    s2t: "Burger + pitsa asos",
+    s2d: "Aniq asosiy kategoriyalar va yangilangan menyu kengayishi.",
+    s3t: "Turk va yevropa taomlari",
+    s3d: "Asosiy menyuni yashirmasdan auditoriyani kengaytiradi.",
+    s4t: "Kompaniya uchun atmosfera",
+    s4d: "Proyektor zal, alohida xona va asosiy zal buni yaxshi ushlab turadi.",
+    s5t: "Yetkazib berish",
+    s5d: "Qayta buyurtma va kechki buyurtmalar uchun muhim.",
+    s6t: "Olib ketish",
+    s6d: "Burger, doner, pitsa va tez pozitsiyalar bilan mos.",
+    s7t: "Futbol yo‘nalishi",
+    s7d: "Match kechalarini doimiy marketing nuqtasiga aylantirish mumkin.",
+    s8t: "Taniqli brending",
+    s8d: "Logo devori va fasad kuchli vizual aktiv.",
+    contactTitle: "Aloqa",
+    contactText: "Bu versiyada siz bergan linklar va ma’lumotlar qo‘llanildi. Domen keyin ulanishi mumkin.",
+    c1: "Telefon",
+    c4: "Onlayn menyu",
+    c5: "Manzil",
+    readyTitle: "Hozirgi tavsiya",
+    readyText: "Keyingi versiyada tasodifiy ko‘p rasm qo‘shish shart emas. Kichikroq va tozaroq set yaxshiroq: fasad, asosiy zal, proyektor zal, alohida xona, 6–8 ta kuchli taom rasmi va to‘g‘ridan-to‘g‘ri buyurtma linklari.",
+    r1: "Fasad rasmi",
+    r2: "Zal rasmlari",
+    r3: "Proyektor / futbol",
+    r4: "Eng kuchli burgerlar",
+    r5: "Pide / turk taomlari",
+    r6: "Telegram buyurtma linki",
+    footer: "Star Burger — Jizzax • 24/7 • 2018-yildan beri"
+  },
+  en: {
+    since: "Jizzakh • since 2018",
+    navMenu: "Menu",
+    navAtmosphere: "Atmosphere",
+    navServices: "Services",
+    navContact: "Contact",
+    eyebrow: "24/7 cafe in Jizzakh",
+    heroTitle: "Burgers, pizza and a strong atmosphere — all day, all night.",
+    heroLead: "Star Burger has been serving guests since 2018. Core menu: burgers and pizza. Updated menu: Turkish and European dishes. Dine-in, takeaway and delivery.",
+    badge1: "Since 2018",
+    badge2: "Open 24/7",
+    badge3: "Delivery",
+    badge4: "Takeaway",
+    badge5: "Football & projector hall",
+    ctaMenu: "Open menu",
+    ctaCall: "Call",
+    pill1Title: "Qodirjon Imomov ko‘chasi",
+    pill1Text: "Jizzakh, Uzbekistan",
+    pill2Title: "Comfort for groups",
+    pill2Text: "Main hall, projector hall, private room",
+    menuTitle: "Selected dishes",
+    menuText: "Not the full menu. This is a short showcase based on the photos you sent.",
+    dish1: "Signature burger from the updated menu.",
+    dish2: "Classic burger line with bold meat focus.",
+    dish3: "Turkish-style baked flatbread options.",
+    dish4: "One of the stronger Turkish additions.",
+    dish5: "Fast, filling option for takeaway or dine-in.",
+    dish6: "European-style starter options.",
+    dish7: "Large table-style breakfast for sharing.",
+    dish8: "Pizza remains one of the core categories.",
+    atmTitle: "Atmosphere and space",
+    atmText: "The strongest visual angle is not only food. You also have a recognizable interior, a facade, projector hall, gaming room and branded details.",
+    g1t: "Main hall",
+    g1d: "Recognizable branding wall and casual seating",
+    g2t: "Projector hall",
+    g2d: "For football and group visits",
+    g3t: "Private room",
+    g3d: "Separate room for small groups",
+    g4t: "Interior details",
+    g4d: "Memorable visual accents",
+    g5t: "Facade",
+    g5d: "Strong night view for maps and social media",
+    srvTitle: "What works well in the positioning",
+    srvText: "Your place should not be presented only as a burger spot. The stronger angle is: food + recognizable interior + late-night comfort + group-friendly space.",
+    s1t: "24/7 format",
+    s1d: "A real differentiator if the service quality stays consistent.",
+    s2t: "Burgers + pizza core",
+    s2d: "Clear main categories with updated menu expansion.",
+    s3t: "Turkish & European dishes",
+    s3d: "Broadens the audience without hiding the core menu.",
+    s4t: "Group atmosphere",
+    s4d: "Projector hall, private room and main hall support this well.",
+    s5t: "Delivery",
+    s5d: "Important for repeat customers and late orders.",
+    s6t: "Takeaway",
+    s6d: "Works well with burgers, doner, pizza and quick items.",
+    s7t: "Football angle",
+    s7d: "Use match nights as a recurring marketing hook.",
+    s8t: "Recognizable branding",
+    s8d: "Logo wall and facade are strong visual assets.",
+    contactTitle: "Contact",
+    contactText: "This version already uses the links and details you provided. Domain can be connected later.",
+    c1: "Phone",
+    c4: "Online menu",
+    c5: "Address",
+    readyTitle: "Current recommendation",
+    readyText: "For the next version, the best route is not to add more random photos. Use a smaller, cleaner set: facade, main hall, projector hall, private room, 6–8 strong dish photos and direct order links.",
+    r1: "Facade photo",
+    r2: "Hall photos",
+    r3: "Projector / football",
+    r4: "Best burgers",
+    r5: "Pide / Turkish dishes",
+    r6: "Telegram order link",
+    footer: "Star Burger — Jizzakh • 24/7 • Since 2018"
+  }
+};
+const buttons = document.querySelectorAll('.lang button');
+function setLang(lang){
+  buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang===lang));
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if(translations[lang][key]) el.textContent = translations[lang][key];
+  });
+}
+buttons.forEach(btn => btn.addEventListener('click', () => setLang(btn.dataset.lang)));
+setLang('uz');
+</script>
+</body>
+</html>

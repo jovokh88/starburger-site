@@ -1,16 +1,6 @@
-export const site = {
-  address: "Jizzax, Madaniyat MFY, Qodirjon Inomov ko‘chasi, 73",
-  phone: "+998 95 503 33 33",
-  tel: "tel:+998955033333",
-  telegram: "https://t.me/starburger_uz",
-  instagram: "https://instagram.com/starburger_uz",
-  menuUrl: "https://starburger.qrcha.uz",
-  googleMaps: "https://www.google.com/maps/place/Star+Burger/data=!4m7!3m6!1s0x38b29535aaee394f:0x43f63058c923975f!8m2!3d40.110259!4d67.8467107!16s%2Fg%2F11f68h_gkm",
-  yandexMaps: "https://yandex.com/maps/org/star_burger/205284545149/",
-  yandexReviews: "https://yandex.com/maps/org/star_burger/205284545149/reviews/",
-  googleReviews: "https://www.google.com/maps/place/Star+Burger/data=!4m7!3m6!1s0x38b29535aaee394f:0x43f63058c923975f!8m2!3d40.110259!4d67.8467107!16s%2Fg%2F11f68h_gkm",
-  placeId: "ChIJTznuqjWVsjgRX5cjyVgw9kM",
-} as const
+import siteConfig from '@/lib/site-config'
+
+export const site = siteConfig
 
 export type Locale = 'ru' | 'uz' | 'en'
 export const locales: Locale[] = ['ru', 'uz', 'en']
@@ -38,4 +28,4 @@ export const menu = [
   { name: 'Iskandar Kebab', desc: 'Нежное мясо, томатный соус и йогурт', price: '66 900', image: '/images/food-kebab.jpg' },
 ] as const
 
-export const mapSearch = 'https://www.google.com/maps/search/?api=1&query=Star+Burger%2C+Jizzax%2C+Madaniyat+MFY%2C+Qodirjon+Inomov+ko%27chasi%2C+73'
+export const mapSearch = siteConfig.mapSearch

@@ -7,7 +7,8 @@ export function generateStaticParams() { return locales.map((locale) => ({ local
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const active = locales.includes(locale as Locale) ? locale as Locale : 'ru'
-  return { title: copy[active].title, description: copy[active].description, alternates: { canonical: `/${active}`, languages: { ru: '/ru', uz: '/uz', en: '/en', 'x-default': '/ru' } }, openGraph: { title: copy[active].title, description: copy[active].description, type: 'website', locale: copy[active].lang } }
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://starburger-site.vercel.app').replace(/\/$/, '')
+  return { title: copy[active].title, description: copy[active].description, metadataBase: new URL(siteUrl), alternates: { canonical: `${siteUrl}/${active}`, languages: { ru: `${siteUrl}/ru`, uz: `${siteUrl}/uz`, en: `${siteUrl}/en`, 'x-default': `${siteUrl}/ru` } }, openGraph: { title: copy[active].title, description: copy[active].description, type: 'website', locale: copy[active].lang, url: `${siteUrl}/${active}` } }
 }
 
 export default async function LocalePage({ params }: { params: Promise<{ locale: string }> }) {

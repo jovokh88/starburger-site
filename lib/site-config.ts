@@ -1,8 +1,9 @@
 export const siteConfig = {
-  address: "Qodirjon Imomov ko‘chasi, Jizzax",
+  address: "Qodirjon Imomov ko'chasi, Jizzax",
   phone: "+998 95 503 33 33",
   tel: "tel:+998955033333",
   telegram: "https://t.me/starburger_uz",
+  telegramOrderBot: "https://t.me/starburgeruzbot",
   instagram: "https://instagram.com/starburger_uz",
   googleMaps: "https://www.google.com/maps/place/Star+Burger/data=!4m7!3m6!1s0x38b29535aaee394f:0x43f63058c923975f!8m2!3d40.110259!4d67.8467107!16s%2Fg%2F11f68h_gkm",
   yandexMaps: "https://yandex.com/maps/org/star_burger/205284545149/",

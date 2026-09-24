@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { locales, type Locale } from '@/lib/site-data'
 import '../globals.css'
+import '../visual-refinements.css'
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://starburger-site.vercel.app').replace(/\/$/, '')
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 }
 export const viewport: Viewport = { themeColor: '#10120e', width: 'device-width', initialScale: 1, viewportFit: 'cover' }
 
-// Resolve the language on the server; do not repair the HTML language after hydration.
+// Resolve the language on the server, before the browser receives the document.
 export default async function LocaleLayout({ children, params }: {
   children: React.ReactNode
   params: Promise<{ locale: string }>

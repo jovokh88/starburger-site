@@ -13,6 +13,7 @@ jobs:
     timeout-minutes: 12
     env:
       NEXT_TELEMETRY_DISABLED: '1'
+      QA_TOOLS_DIR: ${{ runner.temp }}/starburger-browser-tools
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,21 +22,35 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - name: Install and build application
+      - name: Install and build the exact lockfile
+        shell: bash
         run: |
-          mkdir -p qa-report/framework-guides
+          set -euo pipefail
+          mkdir -p qa-report/framework-guides qa-report/source-images
           npm ci
           cp node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/layout.md qa-report/framework-guides/
           cp node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md qa-report/framework-guides/
+          cp public/images/food-burger.jpg public/images/food-pide.jpg public/images/food-kebab.jpg qa-report/source-images/
+          npm audit --omit=dev --json > qa-report/audit-production.json || true
           npm run lint 2>&1 | tee qa-report/lint.txt
           npm run build 2>&1 | tee qa-report/build.txt
-          npm ls next react tailwindcss @vercel/analytics > qa-report/versions.txt
-      - name: Install isolated browser tools
+          npm ls next react tailwindcss @vercel/analytics > qa-report/versions-before.txt
+          sha256sum package-lock.json > qa-report/lockfile-before.txt
+      - name: Install browser tools without modifying project dependencies
+        shell: bash
         run: |
-          npm install --no-save --package-lock=false playwright
-          npx playwright install --with-deps chromium webkit
-      - name: Test local build on desktop and mobile engines
+          set -euo pipefail
+          mkdir -p "$QA_TOOLS_DIR"
+          npm install --prefix "$QA_TOOLS_DIR" --no-audit --no-fund playwright
+          node "$QA_TOOLS_DIR/node_modules/playwright/cli.js" install --with-deps chromium webkit
+          npm ls next react tailwindcss @vercel/analytics > qa-report/versions-after.txt
+          sha256sum package-lock.json > qa-report/lockfile-after.txt
+          diff qa-report/versions-before.txt qa-report/versions-after.txt
+          diff qa-report/lockfile-before.txt qa-report/lockfile-after.txt
+      - name: Test the exact local production build
+        shell: bash
         run: |
+          set -euo pipefail
           npm run start -- --hostname 127.0.0.1 > qa-report/server.txt 2>&1 &
           for i in $(seq 1 40); do curl -fsS http://127.0.0.1:3000/uz >/dev/null && break; sleep 1; done
           node scripts/visual-qa.mjs

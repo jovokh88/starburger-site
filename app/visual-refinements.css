@@ -1,0 +1,13 @@
+/* Refinements verified against the first browser screenshot pass. */
+@media (min-width: 1000px) {
+  .g5 { grid-column: span 2; }
+}
+@media (max-width: 899px) {
+  /* Preserve the whole bun rather than making a shallow panoramic crop. */
+  .hero-photo { aspect-ratio: 1.10; }
+}
+@media (max-width: 639px) {
+  .hero-photo { aspect-ratio: 1.10; }
+  .hero-inner { gap: 20px; }
+  .dialog-photo { height: auto; aspect-ratio: 1.10; }
+}

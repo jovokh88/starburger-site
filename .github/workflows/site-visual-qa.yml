@@ -1,0 +1,89 @@
+name: Starburger isolated visual QA
+on:
+  push:
+    branches: [starburger-visual-qa-20260924]
+permissions:
+  contents: read
+concurrency:
+  group: starburger-visual-qa
+  cancel-in-progress: true
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install and build existing application
+        run: |
+          mkdir -p qa-report public/qa-candidates
+          cp ./*.jpg public/qa-candidates/
+          npm ci
+          find node_modules/next/dist/docs -iname '*layout*' -o -iname '*image*' > qa-report/docs-paths.txt || true
+          npm run build 2>&1 | tee qa-report/build.txt
+          npm ls next react tailwindcss @vercel/analytics > qa-report/versions.txt
+      - name: Install isolated browser tools
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Inspect screens and interactions locally
+        run: |
+          npm run start -- --hostname 127.0.0.1 > qa-report/server.txt 2>&1 &
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:3000/uz >/dev/null && break; sleep 1; done
+          node --input-type=module <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+          const browser = await chromium.launch();
+          const reports = [];
+          for (const locale of ['uz','ru','en']) {
+            const response = await fetch(`http://127.0.0.1:3000/${locale}`);
+            const html = await response.text();
+            await fs.writeFile(`qa-report/${locale}.html`, html);
+            for (const width of [320,375,390,768,1024,1440]) {
+              const context = await browser.newContext({viewport:{width,height:900}, reducedMotion:'reduce'});
+              const page = await context.newPage();
+              const errors=[];
+              page.on('pageerror',e=>errors.push(String(e)));
+              await page.route('**/*',route=>new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+              await page.goto(`http://127.0.0.1:3000/${locale}`,{waitUntil:'networkidle'});
+              const info=await page.evaluate(()=>({
+                width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
+                lang:document.documentElement.lang,
+                mobilePanelDisplay:getComputedStyle(document.querySelector('.mobile-actions')).display,
+                heroImage:[document.querySelector('.hero-img').naturalWidth,document.querySelector('.hero-img').naturalHeight],
+                imageMissing:[...document.images].filter(x=>x.complete && !x.naturalWidth).map(x=>x.src),
+                clipped:[...document.querySelectorAll('h1,h2,h3,.brand,.langs,.card-copy,.nav button')].map(x=>({text:x.textContent,left:x.getBoundingClientRect().left,right:x.getBoundingClientRect().right,width:x.clientWidth,scroll:x.scrollWidth})).filter(x=>x.right>innerWidth+1 || x.left< -1 || x.scroll>x.width+1),
+                gallery:[...document.querySelectorAll('.g')].map(x=>({height:x.getBoundingClientRect().height,width:x.getBoundingClientRect().width}))
+              }));
+              if ([390,1440].includes(width)) {
+                await page.screenshot({path:`qa-report/${locale}-${width}-hero.png`});
+                await page.screenshot({path:`qa-report/${locale}-${width}-full.png`,fullPage:true});
+              }
+              reports.push({locale,width,serverLang:(html.match(/<html[^>]*lang="([^"]+)"/)||[])[1],...info,errors});
+              await context.close();
+            }
+          }
+          const page=await browser.newPage({viewport:{width:1440,height:1100}});
+          await page.goto('http://127.0.0.1:3000/uz');
+          const names=['hero.jpg','food-burger.jpg','food-burger-line.jpg','food1.jpg','food2.jpg','food3.jpg','food4.jpg','food5.jpg','food6.jpg','food7.jpg','food8.jpg','atm-pizza.jpg','atm-hall.jpg','atm-private.jpg','atm-projector.jpg','atm-art.jpg'];
+          await page.setContent('<html><body style="margin:0;background:#ddd;font:16px Arial;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px">'+names.map(n=>`<figure style="margin:0"><img src="http://127.0.0.1:3000/qa-candidates/${n}" style="width:100%;height:280px;object-fit:contain;background:#111"><figcaption>${n}</figcaption></figure>`).join('')+'</body></html>');
+          await page.waitForFunction(()=>[...document.images].every(i=>i.complete));
+          await page.screenshot({path:'qa-report/photo-contact-sheet.png',fullPage:true});
+          await fs.writeFile('qa-report/report.json',JSON.stringify(reports,null,2));
+          console.log(JSON.stringify(reports,null,2));
+          await browser.close();
+          JS
+      - name: Preserve evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: starburger-visual-qa
+          path: qa-report/
+          retention-days: 2

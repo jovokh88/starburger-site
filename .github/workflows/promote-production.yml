@@ -1,0 +1,45 @@
+name: Promote verified Starburger preview to production
+on:
+  push:
+    branches: [promote-starburger-production-20260924]
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      DEPLOYMENT_URL: https://starburger-site-pz2ol886p-jovokh88s-projects.vercel.app
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Verify Vercel authorization exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${VERCEL_TOKEN:-}" ]; then
+            echo "VERCEL_TOKEN secret is not configured in this repository."
+            exit 2
+          fi
+
+      - name: Promote exact verified deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes vercel@latest promote "$DEPLOYMENT_URL"             --token="$VERCEL_TOKEN"             --scope="jovokh88s-projects"             --yes
+
+      - name: Verify public production alias
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 20); do
+            html="$(curl -fsSL https://starburger-site.vercel.app/ru || true)"
+            if printf '%s' "$html" | grep -Fq 'Star Burger — вкус, который запоминается'; then
+              echo "Production alias now serves the verified redesign."
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Production alias did not verify in time."
+          exit 3

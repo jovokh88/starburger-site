@@ -1,0 +1,84 @@
+name: Starburger bounded sharp security repair
+on:
+  push:
+    branches: [starburger-dependency-fix-20260924]
+    paths: [.github/workflows/sharp-security-fix.yml]
+permissions:
+  contents: read
+concurrency:
+  group: starburger-sharp-repair
+  cancel-in-progress: false
+jobs:
+  repair:
+    if: github.repository == 'jovokh88/starburger-site' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      QA_TOOLS_DIR: /tmp/starburger-browser-tools
+      REPAIR_BRANCH: starburger-dependency-fix-20260924
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Apply the verified sharp patch without unrelated upgrades
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qa-report
+          git show HEAD:package-lock.json > /tmp/starburger-lock-before.json
+          npm audit --omit=dev --json > qa-report/audit-before.json || true
+          npm update sharp --package-lock-only --ignore-scripts --no-fund
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const before=JSON.parse(fs.readFileSync('/tmp/starburger-lock-before.json','utf8'));
+          const after=JSON.parse(fs.readFileSync('package-lock.json','utf8'));
+          const changed=[...new Set([...Object.keys(before.packages),...Object.keys(after.packages)])].filter(key=>JSON.stringify(before.packages[key])!==JSON.stringify(after.packages[key]));
+          const unexpected=changed.filter(key=>key!=='node_modules/sharp'&&!key.startsWith('node_modules/@img/sharp-'));
+          if(unexpected.length) throw new Error('Unrelated lockfile changes: '+unexpected.join(', '));
+          if(after.packages['node_modules/sharp']?.version!=='0.35.4') throw new Error('Expected the reviewed patched release sharp 0.35.4');
+          fs.writeFileSync('qa-report/lockfile-changes.json',JSON.stringify({sharpBefore:before.packages['node_modules/sharp']?.version,sharpAfter:after.packages['node_modules/sharp'].version,changed},null,2));
+          console.log('Scoped sharp patch; changed entries:',changed.length);
+          JS
+          npm ci
+          npm audit --omit=dev --json > qa-report/audit-after.json
+          npm ls next react sharp > qa-report/versions.txt
+          npm run lint 2>&1 | tee qa-report/lint.txt
+          npm run build 2>&1 | tee qa-report/build.txt
+      - name: Test patched dependency with both browser engines
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$QA_TOOLS_DIR"
+          npm install --prefix "$QA_TOOLS_DIR" --no-audit --no-fund playwright
+          node "$QA_TOOLS_DIR/node_modules/playwright/cli.js" install --with-deps chromium webkit
+          npm run start -- --hostname 127.0.0.1 > qa-report/server.txt 2>&1 &
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:3000/uz >/dev/null && break; sleep 1; done
+          node scripts/visual-qa.mjs
+      - name: Commit only the tested lockfile to the isolated repair branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$REPAIR_BRANCH"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          git diff --exit-code -- . ':(exclude)package-lock.json'
+          git diff -- package-lock.json > qa-report/security.patch
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package-lock.json
+          git commit -m 'security: lock sharp 0.35.4 after audit and 21 browser checks'
+          git push origin "HEAD:refs/heads/$REPAIR_BRANCH"
+          git rev-parse HEAD > qa-report/release-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: starburger-security-verified
+          path: qa-report/
+          retention-days: 2

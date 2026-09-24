@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 12
     env:
       NEXT_TELEMETRY_DISABLED: '1'
-      QA_TOOLS_DIR: ${{ runner.temp }}/starburger-browser-tools
+      QA_TOOLS_DIR: /tmp/starburger-browser-tools
     steps:
       - uses: actions/checkout@v4
         with:

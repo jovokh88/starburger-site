@@ -12,7 +12,7 @@ function supportedLocale(value: string): Locale {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const active = supportedLocale((await params).locale)
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://starburger-site.vercel.app').replace(/\/$/, '')
-  const image = { url: '/images/food-burger.jpg', width: 1446, height: 2048, alt: 'Star Burger' }
+  const image = { url: '/images/star-burger.webp', width: 1440, height: 1440, alt: 'Star Burger' }
   return {
     title: copy[active].title, description: copy[active].description,
     alternates: { canonical: `${siteUrl}/${active}`, languages: { uz: `${siteUrl}/uz`, ru: `${siteUrl}/ru`, en: `${siteUrl}/en`, 'x-default': `${siteUrl}/uz` } },

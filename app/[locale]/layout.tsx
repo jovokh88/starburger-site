@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { locales, type Locale } from '@/lib/site-data'
 import '../globals.css'
 import '../visual-refinements.css'
+import '../restyle.css'
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://starburger-site.vercel.app').replace(/\/$/, '')
 export const metadata: Metadata = {
@@ -10,8 +11,8 @@ export const metadata: Metadata = {
   title: 'Star Burger',
   icons: { icon: '/images/logo.png', apple: '/images/logo.png' },
   robots: { index: true, follow: true },
-  openGraph: { images: [{ url: '/images/food-burger.jpg', width: 1446, height: 2048, alt: 'Star Burger' }] },
-  twitter: { card: 'summary_large_image', images: ['/images/food-burger.jpg'] }
+  openGraph: { images: [{ url: '/images/star-burger.webp', width: 1440, height: 1440, alt: 'Star Burger' }] },
+  twitter: { card: 'summary_large_image', images: ['/images/star-burger.webp'] }
 }
 export const viewport: Viewport = { themeColor: '#10120e', width: 'device-width', initialScale: 1, viewportFit: 'cover' }
 

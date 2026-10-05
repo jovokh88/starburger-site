@@ -137,10 +137,9 @@ export default function HomePage({ locale = 'uz' }: { locale?: Locale }) {
             </div>
             <p className="hero-hint">{ui.heroHint}</p>
           </div>
-          <figure className="hero-art">
-            <div className="hero-photo"><Image src="/images/star-burger.webp" alt={ui.burgerAlt} fill preload sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 899px) 560px, (max-width: 1328px) calc((100vw - 96px) / 2), 616px" className="hero-img" /></div>
-            <figcaption className="hero-caption"><span>{menu[0].name}</span><strong>{menu[0].price} <small>UZS</small></strong></figcaption>
-          </figure>
+          <div className="hero-art">
+            <div className="hero-photo"><Image src="/images/brand-interior.webp" alt={ui.brandAlt} fill preload sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 899px) 560px, (max-width: 1328px) calc((100vw - 96px) / 2), 616px" className="hero-img" /></div>
+          </div>
         </div>
       </section>
 
@@ -149,8 +148,8 @@ export default function HomePage({ locale = 'uz' }: { locale?: Locale }) {
           <div className="heading"><div><p className="eyebrow ink">{t.kitchen}</p><h2 id="menu-title">{t.hits}</h2></div><a href={site.menuUrl} {...external} onClick={() => record('full_menu_click')} className="text-link">{ui.fullMenu}<ArrowRight size={18} aria-hidden /></a></div>
           <div className="cards">{menu.map(dish => <article key={dish.name} className="card">
             <button type="button" className="card-trigger" aria-haspopup="dialog" aria-label={`${ui.details}: ${dish.name}, ${dish.price} UZS`} onClick={event => { setOpen(false); lastDishButton.current = event.currentTarget; setSelected(dish); record('dish_view', { dish: dish.name }) }}>
-              <div className="photo"><Image src={dish.image} alt={`${dish.name} — ${dish.desc[locale]}`} fill sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 999px) calc((100vw - 72px) / 2), (max-width: 1328px) calc((100vw - 72px) / 2), 628px" className="object-cover" /></div>
-              <div className="card-copy"><h3>{dish.name}</h3><p>{dish.desc[locale]}</p><div className="card-bottom"><strong>{dish.price}<small> UZS</small></strong><span>{ui.details}<ArrowRight size={16} aria-hidden /></span></div></div>
+              <div className="photo"><Image src={dish.image} alt={dish.name} fill sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 999px) calc((100vw - 72px) / 2), (max-width: 1328px) calc((100vw - 72px) / 2), 628px" className="object-cover" /></div>
+              <div className="card-copy"><h3>{dish.name}</h3><div className="card-bottom"><strong>{dish.price}<small> UZS</small></strong><span>{ui.details}<ArrowRight size={16} aria-hidden /></span></div></div>
             </button>
           </article>)}</div>
           <p className="menu-note">{ui.menuNote} <a href={site.menuUrl} {...external} onClick={() => record('full_menu_click', { placement: 'note' })}>QRCHA <ExternalLink size={12} aria-hidden /></a></p>
@@ -173,7 +172,7 @@ export default function HomePage({ locale = 'uz' }: { locale?: Locale }) {
     </main>
     <footer><div className="wrap foot"><span>STAR BURGER</span><small>© 2026 · {locale === 'en' ? 'Jizzakh' : locale === 'ru' ? 'Джизак' : 'Jizzax'} · 24/7</small><a href={site.tel} onClick={() => record('phone_click', { placement: 'footer' })}>{site.phone}</a></div></footer>
     <nav ref={actionBar} className="mobile-actions" aria-label={ui.quickActions}><a href={site.menuUrl} {...external} onClick={() => record('mobile_menu_click')}>{ui.fullMenu}</a><a href={site.telegram} {...external} aria-label={ui.telegramContact} onClick={() => record('telegram_contact_click')}>Telegram</a><a href={site.tel} aria-label={ui.call} onClick={() => record('phone_click', { placement: 'mobile' })}><Phone size={20} aria-hidden /></a></nav>
-    <dialog ref={dialog} className="dish-dialog" aria-labelledby="dish-title" aria-describedby="dish-description" onKeyDown={event => {
+    <dialog ref={dialog} className="dish-dialog photo-viewer" aria-labelledby="dish-title" onKeyDown={event => {
       if (event.key !== 'Tab') return
       const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')).filter(element => element.getClientRects().length > 0)
       const first = controls[0]
@@ -187,7 +186,7 @@ export default function HomePage({ locale = 'uz' }: { locale?: Locale }) {
       next.focus()
       next.scrollIntoView({ block: 'nearest' })
     }} onClose={() => { setSelected(null); if (lastDishButton.current?.isConnected) lastDishButton.current.focus() }} onClick={event => { if (event.target === event.currentTarget) { const box = event.currentTarget.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) event.currentTarget.close() } }}>
-      {selected && <><div className="dialog-toolbar"><span>{ui.details}</span><button type="button" className="dialog-close" aria-label={ui.close} onClick={() => dialog.current?.close()}><X aria-hidden /></button></div><div className="dialog-content"><div className="dialog-photo"><Image src={selected.image} alt={`${selected.name} — ${selected.desc[locale]}`} fill sizes="(max-width: 699px) calc(100vw - 24px), 450px" className="object-cover" /></div><div className="dialog-copy"><p className="eyebrow ink">STAR BURGER</p><h2 id="dish-title">{selected.name}</h2><p id="dish-description">{selected.desc[locale]}</p><p className="dialog-price">{selected.price} <small>UZS</small></p><p className="dialog-note">{ui.dialogNote}</p><a href={site.menuUrl} {...external} className="text-link" onClick={() => record('full_menu_click', { placement: 'dish' })}>{ui.fullMenu}<ExternalLink size={15} aria-hidden /></a></div></div></>}
+      {selected && <><div className="dialog-toolbar"><h2 id="dish-title">{selected.name}</h2><button type="button" className="dialog-close" aria-label={ui.close} onClick={() => dialog.current?.close()}><X aria-hidden /></button></div><div className="dialog-photo"><Image src={selected.image} alt={selected.name} fill sizes="(max-width: 823px) calc(100vw - 24px), 800px" className="object-cover" /></div></>}
     </dialog>
   </>
 }

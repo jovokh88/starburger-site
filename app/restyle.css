@@ -291,3 +291,10 @@ a:active, button:active { transition: none; }
   .card:first-child .photo { aspect-ratio: 1; }
   .hero .actions { grid-template-columns: 1fr; }
 }
+
+/* Dish interaction is an image viewer, not a second product card. */
+.photo-viewer { width: min(800px, calc(100vw - 24px)); }
+.photo-viewer .dialog-toolbar h2 { margin: 0; font: inherit; }
+.photo-viewer .dialog-photo { width: 100%; max-height: calc(100dvh - 110px); }
+.photo-viewer .dialog-photo img { object-fit: contain; }
+.card-copy .card-bottom { margin-top: auto; }

@@ -1,6 +1,6 @@
-import hall from '../atm-hall.jpg'
-import privateRoom from '../atm-private.jpg'
-import projector from '../atm-projector.jpg'
+import hall from '../atm-hall-enhanced-20261018.webp'
+import privateRoom from '../atm-private-enhanced-20261018.webp'
+import projector from '../atm-projector-enhanced-20261018.webp'
 import art from '../atm-art.jpg'
 import pizza from '../atm-pizza.jpg'
 

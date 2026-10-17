@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowRight, Clock3, ExternalLink, MapPin, Menu as MenuIcon, MessageCircle, Phone, Users, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, Clock3, ExternalLink, MapPin, Menu as MenuIcon, MessageCircle, Phone, Users, X } from 'lucide-react'
 import { track } from '@vercel/analytics'
 import { useEffect, useRef, useState } from 'react'
 import { copy, menu, site, type Locale } from '@/lib/site-data'
@@ -129,17 +129,19 @@ export default function HomePage({ locale = 'uz' }: { locale?: Locale }) {
         <div className="wrap hero-inner">
           <div className="hero-copy">
             <p className="eyebrow"><span className="status-dot" aria-hidden />{t.city}</p>
-            <h1 id="hero-title"><span>{t.hero[0]}</span>{' '}<em>{t.hero[1]}</em>{' '}<span>{t.hero[2]}</span></h1>
-            <p className="lead">{t.intro}</p>
+            <h1 id="hero-title">{ui.heroTitle.map(line => <span key={line}>{line}{' '}</span>)}</h1>
+            <p className="lead">{ui.heroLead}</p>
             <div className="actions">
               <a href={site.menuUrl} {...external} onClick={() => record('menu_open', { placement: 'hero' })} className="primary">{ui.fullMenu}<ArrowRight size={18} aria-hidden /></a>
-              <a href={site.telegram} {...external} onClick={() => record('telegram_contact_click', { placement: 'hero' })} className="ghost">{ui.telegramContact}<MessageCircle size={18} aria-hidden /></a>
+              <a href={site.tel} aria-label={ui.call} onClick={() => record('phone_click', { placement: 'hero' })} className="ghost"><Phone size={18} aria-hidden />{ui.callShort}</a>
             </div>
             <p className="hero-hint">{ui.heroHint}</p>
+            <a className="hero-browse" href="#menu" onClick={() => navigateToSection('#menu')}>{ui.browseDishes}<ArrowDown size={18} aria-hidden /></a>
           </div>
-          <div className="hero-art">
-            <div className="hero-photo"><Image src="/images/brand-interior.webp" alt={ui.brandAlt} fill preload sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 899px) 560px, (max-width: 1328px) calc((100vw - 96px) / 2), 616px" className="hero-img" /></div>
-          </div>
+          <figure className="hero-art">
+            <div className="hero-photo"><Image src="/images/star-burger.webp" alt="Star Burger" fill preload sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 899px) 520px, (max-width: 1328px) calc((100vw - 96px) / 2), 560px" className="hero-img" /></div>
+            <figcaption className="hero-caption"><span>Star Burger</span><span>{t.signature}</span></figcaption>
+          </figure>
         </div>
       </section>
 
@@ -148,30 +150,28 @@ export default function HomePage({ locale = 'uz' }: { locale?: Locale }) {
           <div className="heading"><div><p className="eyebrow ink">{t.kitchen}</p><h2 id="menu-title">{t.hits}</h2></div><a href={site.menuUrl} {...external} onClick={() => record('full_menu_click')} className="text-link">{ui.fullMenu}<ArrowRight size={18} aria-hidden /></a></div>
           <div className="cards">{menu.map(dish => <article key={dish.name} className="card">
             <button type="button" className="card-trigger" aria-haspopup="dialog" aria-label={`${ui.details}: ${dish.name}, ${dish.price} UZS`} onClick={event => { setOpen(false); lastDishButton.current = event.currentTarget; setSelected(dish); record('dish_view', { dish: dish.name }) }}>
-              <div className="photo"><Image src={dish.image} alt={dish.name} fill sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 999px) calc((100vw - 72px) / 2), (max-width: 1328px) calc((100vw - 72px) / 2), 628px" className="object-cover" /></div>
+              <div className="photo"><Image src={dish.image} alt={dish.name} fill sizes="auto, (max-width: 359px) calc(100vw - 32px), (max-width: 639px) calc((100vw - 44px) / 2), (max-width: 999px) calc((100vw - 72px) / 2), (max-width: 1328px) calc((100vw - 96px) / 3), 400px" className="object-cover" /></div>
               <div className="card-copy"><h3>{dish.name}</h3><div className="card-bottom"><strong>{dish.price}<small> UZS</small></strong><span>{ui.details}<ArrowRight size={16} aria-hidden /></span></div></div>
             </button>
-          </article>)}</div>
+          </article>)}<aside className="menu-more"><div><h3>{ui.menuMoreTitle}</h3><p>{ui.menuMoreText}</p></div><a className="dark" href={site.menuUrl} {...external} onClick={() => record('full_menu_click', { placement: 'menu_card' })}>{ui.fullMenu}<ExternalLink size={18} aria-hidden /></a></aside></div>
           <p className="menu-note">{ui.menuNote} <a href={site.menuUrl} {...external} onClick={() => record('full_menu_click', { placement: 'note' })}>QRCHA <ExternalLink size={12} aria-hidden /></a></p>
         </div>
       </section>
 
-      <section id="story" tabIndex={-1} className="story" aria-labelledby="story-title"><div className="wrap story-grid"><div><p className="eyebrow">{t.about}</p><h2 id="story-title">{t.always}</h2><p className="story-lead">{t.experienceText}</p></div><div className="features">
-        <div><Clock3 aria-hidden /><span className="feature-number" aria-hidden>01</span><h3>24/7</h3><p>{t.open}</p></div>
-        <div><Users aria-hidden /><span className="feature-number" aria-hidden>02</span><h3>{t.private}</h3><p>{t.privateText}</p></div>
-        <div><MessageCircle aria-hidden /><span className="feature-number" aria-hidden>03</span><h3>{t.football}</h3><p>{t.footballText}</p></div>
+      <section id="story" tabIndex={-1} className="story" aria-labelledby="story-title"><div className="wrap story-grid"><div className="story-copy"><p className="eyebrow">{t.about}</p><h2 id="story-title">{t.always}</h2><p className="story-lead">{t.experienceText}</p><a className="story-link" href="#contact" onClick={() => navigateToSection('#contact')}><MapPin size={18} aria-hidden />{ui.findUs}<ArrowRight size={18} aria-hidden /></a></div><div className="story-photo"><Image src="/images/brand-interior.webp" alt={ui.brandAlt} fill sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 899px) 520px, 420px" className="object-cover" /></div><div className="features">
+        <div><Clock3 aria-hidden /><h3>24/7</h3><p>{t.open}</p></div>
+        <div><Users aria-hidden /><h3>{t.private}</h3><p>{t.privateText}</p></div>
+        <div><MessageCircle aria-hidden /><h3>{t.football}</h3><p>{t.footballText}</p></div>
       </div></div></section>
 
-      <section className="paper section" aria-labelledby="gallery-title"><div className="wrap"><p className="eyebrow ink">{t.atmosphereLabel}</p><h2 id="gallery-title">{t.atmosphere}</h2><div className="gallery">{atmosphereGallery.map((image, index) => <figure key={image.alt.en} className={`g g${index + 1}`}><div className="gallery-photo"><Image src={image.src} alt={image.alt[locale]} fill placeholder={typeof image.src === 'string' ? 'empty' : 'blur'} loading="lazy" sizes={index === 0 || index === 3 || index === 4
-        ? 'auto, (max-width: 359px) calc(100vw - 32px), (max-width: 639px) calc(100vw - 32px), (max-width: 999px) calc((100vw - 64px) / 2), (max-width: 1328px) calc(66.667vw - 37.333px), 848px'
-        : 'auto, (max-width: 359px) calc(100vw - 32px), (max-width: 639px) calc(100vw - 32px), (max-width: 999px) calc((100vw - 64px) / 2), (max-width: 1328px) calc(33.333vw - 26.667px), 416px'} className="object-cover" /></div><figcaption>{image.alt[locale]}</figcaption></figure>)}</div></div></section>
+      <section className="paper section" aria-labelledby="gallery-title"><div className="wrap"><p className="eyebrow ink">{t.atmosphereLabel}</p><h2 id="gallery-title">{t.atmosphere}</h2><div className="gallery">{atmosphereGallery.map((image, index) => <figure key={image.alt.en} className={`g g${index + 1}`}><div className="gallery-photo"><Image src={image.src} alt={image.alt[locale]} fill placeholder={typeof image.src === 'string' ? 'empty' : 'blur'} loading="lazy" sizes="(max-width: 639px) calc((100vw - 44px) / 2), (max-width: 999px) calc((100vw - 72px) / 2), (max-width: 1328px) calc((100vw - 96px) / 3), 400px" className="object-cover" /></div><figcaption>{image.alt[locale]}</figcaption></figure>)}</div></div></section>
 
-      <section id="reviews" tabIndex={-1} className="reviews" aria-labelledby="reviews-title"><div className="wrap review-grid"><div><p className="eyebrow">{t.reviewsLabel}</p><h2 id="reviews-title">{ui.reviewTitle}</h2></div><div><p>{ui.reviewText}</p><div className="actions"><a href={site.googleReviews} {...external} onClick={() => record('google_reviews_click')} className="outline">Google<ExternalLink size={16} aria-hidden /></a><a href={site.yandexReviews} {...external} onClick={() => record('yandex_reviews_click')} className="outline">Yandex<ExternalLink size={16} aria-hidden /></a></div></div></div></section>
+      <section id="reviews" tabIndex={-1} className="reviews" aria-labelledby="reviews-title"><div className="wrap review-grid"><div><p className="eyebrow">{t.reviewsLabel}</p><h2 id="reviews-title">{ui.reviewTitle}</h2></div><div><p>{ui.reviewText}</p><div className="actions"><a href={site.googleReviews} {...external} onClick={() => record('google_reviews_click')} className="outline">{ui.googleReviews}<ExternalLink size={16} aria-hidden /></a><a href={site.yandexReviews} {...external} onClick={() => record('yandex_reviews_click')} className="outline">{ui.yandexReviews}<ExternalLink size={16} aria-hidden /></a></div></div></div></section>
 
-      <section id="contact" tabIndex={-1} className="paper contact" aria-labelledby="contact-title"><div className="wrap contact-grid"><div className="contact-copy"><p className="eyebrow ink">{t.findLabel}</p><h2 id="contact-title">{t.find}</h2><address className="contact-list"><p><MapPin aria-hidden />{t.address}</p><p><Clock3 aria-hidden />{t.open}</p><a href={site.tel} onClick={() => record('phone_click', { placement: 'contact' })}><Phone aria-hidden />{site.phone}</a></address><div className="actions"><a href={site.mapSearch} {...external} onClick={() => record('directions_click')} className="dark">{t.route}<ArrowRight size={18} aria-hidden /></a><a href={site.instagram} {...external} onClick={() => record('instagram_click')} className="light">Instagram<ExternalLink size={16} aria-hidden /></a></div></div><div className="contact-photo"><Image src="/images/atm-facade.jpg" alt={t.facadeAlt} fill sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 899px) calc(100vw - 48px), (max-width: 1328px) calc((100vw - 96px) / 2), 616px" className="object-cover" /></div></div></section>
+      <section id="contact" tabIndex={-1} className="paper contact" aria-labelledby="contact-title"><div className="wrap contact-grid"><div className="contact-copy"><p className="eyebrow ink">{t.findLabel}</p><h2 id="contact-title">{t.find}</h2><address className="contact-list"><p><MapPin aria-hidden />{t.address}</p><p><Clock3 aria-hidden />{t.open}</p><a href={site.tel} onClick={() => record('phone_click', { placement: 'contact' })}><Phone aria-hidden />{site.phone}</a></address><p className="contact-action-label">{ui.openMap}</p><div className="actions map-actions"><a href={site.mapSearch} {...external} onClick={() => record('directions_click', { placement: 'contact', provider: 'google' })} className="dark">{t.google}<ExternalLink size={16} aria-hidden /></a><a href={site.yandexMaps} {...external} onClick={() => record('directions_click', { placement: 'contact', provider: 'yandex' })} className="light">{t.yandex}<ExternalLink size={16} aria-hidden /></a></div><div className="contact-socials"><a href={site.telegram} {...external} onClick={() => record('telegram_contact_click', { placement: 'contact' })} className="text-link">{ui.telegramContact}<MessageCircle size={16} aria-hidden /></a><a href={site.instagram} {...external} onClick={() => record('instagram_click')} className="text-link">Instagram<ExternalLink size={16} aria-hidden /></a></div></div><div className="contact-photo"><Image src="/images/atm-facade.jpg" alt={t.facadeAlt} fill sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 899px) calc(100vw - 48px), (max-width: 1328px) calc((100vw - 96px) / 2), 616px" className="object-cover" /></div></div></section>
     </main>
     <footer><div className="wrap foot"><span>STAR BURGER</span><small>© 2026 · {locale === 'en' ? 'Jizzakh' : locale === 'ru' ? 'Джизак' : 'Jizzax'} · 24/7</small><a href={site.tel} onClick={() => record('phone_click', { placement: 'footer' })}>{site.phone}</a></div></footer>
-    <nav ref={actionBar} className="mobile-actions" aria-label={ui.quickActions}><a href={site.menuUrl} {...external} onClick={() => record('mobile_menu_click')}>{ui.fullMenu}</a><a href={site.telegram} {...external} aria-label={ui.telegramContact} onClick={() => record('telegram_contact_click')}>Telegram</a><a href={site.tel} aria-label={ui.call} onClick={() => record('phone_click', { placement: 'mobile' })}><Phone size={20} aria-hidden /></a></nav>
+    <nav ref={actionBar} className="mobile-actions" aria-label={ui.quickActions}><a href={site.menuUrl} {...external} onClick={() => record('mobile_menu_click')}>{ui.fullMenu}</a><a className="mobile-icon-action" href={site.mapSearch} {...external} aria-label={ui.openMap} onClick={() => record('directions_click', { placement: 'mobile', provider: 'google' })}><MapPin size={20} aria-hidden /><span>{ui.map}</span></a><a className="mobile-icon-action" href={site.telegram} {...external} aria-label={ui.telegramContact} onClick={() => record('telegram_contact_click', { placement: 'mobile' })}><MessageCircle size={20} aria-hidden /><span>Telegram</span></a><a href={site.tel} aria-label={ui.call} onClick={() => record('phone_click', { placement: 'mobile' })}><Phone size={20} aria-hidden /></a></nav>
     <dialog ref={dialog} className="dish-dialog photo-viewer" aria-labelledby="dish-title" onKeyDown={event => {
       if (event.key !== 'Tab') return
       const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')).filter(element => element.getClientRects().length > 0)
